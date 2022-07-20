@@ -27,10 +27,9 @@ test:
 	go mod tidy
 	$(GOCGO) test ./... -coverprofile=coverage.out
 	$(GOCGO) vet ./...
-	gofmt -l .
-	[ "`gofmt -l .`" = "" ]
+	gofmt -l $$(find . -type f -name '*.go'| grep -v "/vendor/")
+	[ "`gofmt -l $$(find . -type f -name '*.go'| grep -v "/vendor/")`" = "" ]
 	./bin/test-attribution-txt.sh
-	./bin/test-go-mod-tidy.sh
 
 clean:
 	rm -f $(MICROSERVICES)

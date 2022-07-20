@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-ARG BASE=golang:1.16-alpine3.12
+ARG BASE=golang:1.17-alpine3.15
 FROM ${BASE} AS builder
 
 ARG ALPINE_PKG_BASE="make git openssh-client gcc libc-dev zeromq-dev libsodium-dev"
@@ -29,6 +29,9 @@ RUN sed -e 's/dl-cdn[.]alpinelinux.org/nl.alpinelinux.org/g' -i~ /etc/apk/reposi
 # Install our build time packages.
 RUN apk add --update --no-cache ${ALPINE_PKG_BASE} ${ALPINE_PKG_EXTRA}
 
+COPY go.mod vendor* ./
+RUN [ ! -d "vendor" ] && go mod download all || echo "skipping..."
+
 COPY . .
 
 RUN go mod tidy
@@ -40,10 +43,10 @@ RUN go mod download
 ARG MAKE='make build'
 RUN ${MAKE}
 
-FROM alpine:3.12
+FROM alpine:3.15
 
 LABEL license='SPDX-License-Identifier: Apache-2.0' \
-  copyright='Copyright (c) 2021: Jiangxing Intelligence'
+  copyright='Copyright (c) 2022: Jiangxing Intelligence'
 
 # dumb-init needed for injected secure bootstrapping entry point script when run in secure mode.
 RUN apk add --update --no-cache zeromq dumb-init
