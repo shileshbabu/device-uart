@@ -7,12 +7,15 @@ MICROSERVICES=cmd/device-uart
 
 .PHONY: $(MICROSERVICES)
 
-DOCKERS=docker_device_uart_go
+DOCKERS=docker_device_uart
 .PHONY: $(DOCKERS)
 
 VERSION=$(shell cat ./VERSION 2>/dev/null || echo 0.0.0)
 GIT_SHA=$(shell git rev-parse HEAD)
 GOFLAGS=-ldflags "-X github.com/edgexfoundry/device-uart.Version=$(VERSION)"
+
+tidy:
+	go mod tidy
 
 build: $(MICROSERVICES)
 
